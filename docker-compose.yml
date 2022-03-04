@@ -23,6 +23,18 @@ services:
       MYSQL_DATABASE: "${MYSQL_DATABASE}"
       MYSQL_USER: "${MYSQL_USER}"
       MYSQL_PASSWORD: "${MYSQL_PASSWORD}"
+    labels:
+      - "traefik.enable=true"
+      - "traefik.docker.network=frontend"
+      - "traefik.http.routers.facilemanager.entrypoints=web"
+      - "traefik.http.routers.facilemanager.rule=Host(`${fm_URL}`)"
+      - "traefik.http.services.facilemanager.loadbalancer.server.port=80"
+      - "traefik.http.middlewares.facilemanager-https-redirect.redirectscheme.scheme=https"
+      - "traefik.http.routers.facilemanager.middlewares=facilemanager-https-redirect"
+      - "traefik.http.routers.facilemanager-secure.entrypoints=websecure"
+      - "traefik.http.routers.facilemanager-secure.rule=Host(`${fm_URL}`)"
+      - "traefik.http.routers.facilemanager-secure.tls.certresolver=resolver-http"
+      - "traefik.http.routers.facilemanager-secure.tls=true"
     links:
       - mysql
 
@@ -69,6 +81,12 @@ services:
       FACILE_MANAGER_HOST: ${fmDNS_Manager}
       FACILE_CLIENT_SERIAL_NUMBER: ${fmDNS_Serial}
       FACILE_CLIENT_URL: ${fmDNS_URL}
+    labels:
+      - "traefik.enable=true"
+      - "traefik.docker.network=frontend"
+      - "traefik.http.routers.fmdns.entrypoints=web"
+      - "traefik.http.routers.fmdns.rule=Host(`${fmDNS_URL}`)"
+      - "traefik.http.services.fmdns.loadbalancer.server.port=80"
 
 #volumes:
 #    mysql:
